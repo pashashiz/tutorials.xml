@@ -1,0 +1,28 @@
+<policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="TCIRecordsManagementPolicy_2009_09.xsd">
+    <policyName>Test universal indexes</policyName>
+    <policyDescription/>
+    <eventTypeName>Employee</eventTypeName>
+    <recordType>BIGMAX</recordType>
+    <actions>
+        <action xsi:noNamespaceSchemaLocation="TCIRecordsManagementPolicy_2009_09.xsd" xsi:type="recordSearch">
+            <consequence xsi:type="relativeDate">
+                <offset>
+                    <days>0</days>
+                    <months>0</months>
+                    <years>7</years>
+                </offset>
+            </consequence>
+            <searchExpression>
+                <conjunction>AND</conjunction>
+                <searchTerms xsi:type="searchTerm">
+                    <indexName>Topic</indexName>
+                    <operator>EQ</operator>
+                    <searchValues>
+                        <searchValue>${EMPL_ID}</searchValue>
+                    </searchValues>
+                </searchTerms>
+            </searchExpression>
+        </action>
+    </actions>
+</policy>

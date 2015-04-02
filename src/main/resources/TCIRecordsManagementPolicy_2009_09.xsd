@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="policy">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="policyName" type="xs:string"/>
+                <xs:element name="policyDescription" type="xs:string"/>
+                <xs:element name="eventTypeName" type="xs:string"/>
+                <xs:element name="recordType" type="xs:string"/>
+                <xs:element name="actions">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="action" type="actionType" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="actionType" abstract="true">
+        <xs:sequence>
+            <xs:element name="consequence" type="consequenceType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="recordSearch">
+        <xs:complexContent>
+            <xs:extension base="actionType">
+                <xs:sequence>
+                    <xs:element name="TCIRepositories" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="TCIRepository" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="searchExpression" type="searchExpressionType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="searchExpressionType">
+        <xs:sequence>
+            <xs:element name="conjunction"/>
+            <xs:element name="searchTerms" type="searchTermType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="searchTermType" abstract="true"/>
+    <xs:complexType name="searchTerm">
+        <xs:complexContent>
+            <xs:extension base="searchTermType">
+                <xs:sequence>
+                    <xs:element name="indexName"/>
+                    <xs:element name="operator"/>
+                    <xs:element name="searchValues">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="searchValue" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="subExpression">
+        <xs:complexContent>
+            <xs:extension base="searchTermType">
+                <xs:sequence>
+                    <xs:element name="searchExpression" type="searchExpressionType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="consequenceType" abstract="true"/>
+    <xs:complexType name="explicitDate">
+        <xs:complexContent>
+            <xs:extension base="consequenceType">
+                <xs:sequence>
+                    <xs:element name="date"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="relativeDate">
+        <xs:complexContent>
+            <xs:extension base="consequenceType">
+                <xs:sequence>
+                    <xs:element name="offset">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="days" type="xs:string"/>
+                                <xs:element name="months" type="xs:string"/>
+                                <xs:element name="years" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="baseDateValue" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="roundedRelativeDate">
+        <xs:complexContent>
+            <xs:extension base="relativeDate">
+                <xs:sequence>
+                    <xs:element name="function" type="functionType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="functionType">
+        <xs:sequence>
+            <xs:element name="functionName" type="functionName"/>
+            <xs:element name="parameter" type="parameter"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:simpleType name="functionName">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="roundToBeginningOfMonth"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="parameter">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="indefinite">
+        <xs:complexContent>
+            <xs:extension base="consequenceType"/>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>
