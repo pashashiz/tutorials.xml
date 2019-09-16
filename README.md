@@ -218,5 +218,106 @@ We would need to create a 1 min mini batch and reduce the number of index update
 
 
 
+Retrieve last known location of a device.
 
+## Usage examples
+
+This service can find an approximate location of a device with certain accurracy
+(represents the radius of a circle around the given location).
+
+### Getting all known device locations
+
+There multiple sources exist to get a location of a device, like
+  - by GPS (`gps` source)
+  - reported WiFi access points (`wifi` source)
+  - reported Cell Towers (`cell_tower` source)
+  - by IP of a gateway the devices sends data with (`ip` source)
+  - by blue DNS value (Walmart device only) (`blue_dns` source)
+
+Run:
+```bash
+curl -H "apikey: ***" https://api.zebra.com/v2/data-platform/private/zebra/location/16140522501076?t=walmart > out.json
+```
+
+NOTE: we used `walmart` tenant here, make sure your account has access to this tenant to reprosuce such example.
+
+The response will be like:
+```json
+[
+    {
+        "source": "wifi",
+        "location": {
+            "lat": 27.853777700000002,
+            "lng": -97.6334316
+        },
+        "confidence": 0.95,
+        "accuracy": 57,
+        "timestamp": "2019-09-12T08:55:46.006Z",
+        "weight": 0.5202415577910159
+    },
+    {
+        "source": "blue_dns",
+        "location": {
+            "lat": 27.853628,
+            "lng": -97.633395
+        },
+        "confidence": 0.95,
+        "accuracy": 202,
+        "timestamp": "2019-09-12T06:42:00.089Z",
+        "weight": 0.4083675173286148
+    }
+]
+```
+
+You can see that 2 location sources were available for a device `wifi` and `blue_dns`.
+In a response they are sorted by relevance, `wifi` is supposed to be more accurate.
+
+### Getting device location from a particular source
+
+If you know exactly the source with the best location of a device, you may save
+our service resources and narrow down the search to a particular source.
+
+For example to get only `wifi` location you can call:
+```bash
+curl -H "apikey: ***" https://api.zebra.com/v2/data-platform/private/zebra/location/16140522501076/wifi?t=walmart > out.json
+```
+
+The response will be like:
+```json
+{
+    "source": "wifi",
+    "location": {
+        "lat": 27.853777700000002,
+        "lng": -97.6334316
+    },
+    "confidence": 0.95,
+    "accuracy": 57,
+    "timestamp": "2019-09-12T08:55:46.006Z",
+    "weight": 0.5202415577910159
+}
+```
+
+### Getting device location from a source with the highest relevance (`weight`)
+
+If you are only interested in the most acccurate location you may filter out the rest
+and reduce network trafic and client resources.
+
+You can call:
+```bash
+curl -H "apikey: ***" https://api.zebra.com/v2/data-platform/private/zebra/location/16140522501076/finest?t=walmart > out.json
+```
+
+The response will be like:
+```json
+{
+   "source": "wifi",
+   "location": {
+       "lat": 27.853777700000002,
+       "lng": -97.6334316
+   },
+   "confidence": 0.95,
+   "accuracy": 57,
+   "timestamp": "2019-09-12T08:55:46.006Z",
+   "weight": 0.5202415577910159
+}
 
